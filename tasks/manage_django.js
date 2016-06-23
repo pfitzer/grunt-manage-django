@@ -11,36 +11,33 @@
 module.exports = function (grunt) {
 
     var spawn = require('child_process').spawn,
-        exec = require('child_process').exec;
+        exec = require('child_process').exec,
+        async = require('async');
 
     grunt.registerMultiTask('manage_django', 'Manage django tasks with grunt.', function () {
         // Merge task-specific and/or target-specific options with these defaults.
         var options = this.options({
-            project_root: ''
-        });
-        var done = this.async();
-        var cmd = 'source ' + options.project_root + 'env/bin/activate && ' + options.project_root + 'manage.py test';
-        var venv = exec(cmd, function (err, stdout, stderr) {
-            if (err) throw err;
-            done(err);
-        });
-        venv.stdout.on('data', function (d) {
-            grunt.log.write(d);
-        });
-        venv.stderr.on('data', function (d) {
-            grunt.log.write(d);
+            project_root: '',
+            use_venv: true,
+            venv_dir: ''
         });
 
-        venv.stdout.on('error', function (d) {
-            grunt.log.write(d);
-        });
-        venv.stdout.on('exit', function (d) {
-            grunt.log.write(d);
-        });
-        venv.stdout.on('end', function (d) {
-            grunt.log.write(d);
-            done();
-        });
+        async.series(
+            [
+                function(callback) {
+                    exec('source ' + options.venv_dir + 'bin/activate');
+                    callback(null, 1);
+                },
+                function(callback) {
+                    exec('python ' + options.project_root + ' manage.py test', function(error, stdout, stderr) {
+                        if(error) throw error;
+                    });
+                    callback(null, 1);
+                }
+            ],
+            function(err, results) {
+                grunt.log.write(results);
+            }
+        );
     });
-
 };

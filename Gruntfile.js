@@ -32,17 +32,9 @@ module.exports = function(grunt) {
     manage_django: {
       default_options: {
         options: {
-          project_root: '/home/micpfist/Scripts/spider/'
+          project_root: '/home/micpfist/spider/',
+          venv_dir: '/home/micpfist/spider/env/'
         },
-      },
-      custom_options: {
-        options: {
-          separator: ': ',
-          punctuation: ' !!!'
-        },
-        files: {
-          'tmp/custom_options': ['test/fixtures/testing', 'test/fixtures/123']
-        }
       }
     },
 
